@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <title>命令生成器 - PointCard2</title>
+    <link rel="stylesheet" href="assets/KyMD.css" />
+    <script>
+        window.orgtitle = document.title;
+        document.title = "正在加载..."
+    </script>
+</head>
+
+<body class="preload">
+    <header id="header">
+        <h1>命令生成器</h1>
+    </header>
+    <div id="content">
+        <div class="card">
+            <div class="card-imgheader">
+                <!--<div class="card-imgheader">-->
+                <img width="260" height="240" src="assets/img1.png" />
+                <span class="card-imgtitle">PointCard2</span>
+                <!--</div>-->
+            </div>
+            <div class="card-body">
+                PointCard 是一个 PocketMine 插件，可以用来给玩家发放点卡福利。现在 PointCard 经过功能完善和修复，已经更新到 2.0 版本。PointCard 使用 GPLv3 协议开源。
+                <br>
+                <br>
+            </div>
+            <div class="card-footer">
+                <a href="https://github.com/Cansll/PointCard">前往PC2项目开源地址</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                命令生成工具
+            </div>
+            <div class="card-body">
+                <div class="form">
+                    <span class="form-label">生成数量</span>
+                    <input id="f-count" type="number" style="width:48px!important;" value=5 min=1 max=60/>
+                    <br>
+                    <span class="form-label">卡密总共可用次数(1为一次性)</span>
+                    <input id="f-times" type="number" style="width:48px!important;" value=1 min=1/>
+                    <br>
+                    <span class="form-label">金币数量</span>
+                    <input id="f-money" type="number" style="width:48px!important;" value=0 min=0/>
+                    <br>
+                    <span class="form-label">点券数量</span>
+                    <input id="f-point" type="number" style="width:48px!important;" value=0 min=0/>
+                    <br>
+                    <span class="form-label">VIP等级(0代表没有)</span>
+                    <input id="f-vip-level" type="number" style="width:48px!important;" value=0 min=0 max=3/>
+                    <br>
+                    <span class="form-label">VIP天数(0代表没有)</span>
+                    <input id="f-vip-days" type="number" style="width:48px!important;" value=0 min=0/>
+                    <br>
+                    <span class="form-label">有效期限(单位：小时)</span>
+                    <input id="f-expire" type="number" value="8760" style="width:48px!important;" min=1 />
+                    <a href="javascript:void(0)" onclick="for1day()">1天</a>
+                    <a href="javascript:void(0)" onclick="for7day()">7天</a>
+                    <a href="javascript:void(0)" onclick="for1m()">1个月</a>
+                    <a href="javascript:void(0)" onclick="for1y()">1年(默认)</a>
+                    <br>
+                    <span class="form-label">称号(写.点号代表没有)</span>
+                    <input id="f-prefix" type="text" value="." />
+                    <br>
+                    <span class="form-label">命令预设(写nothingodo代表没有)</span>
+                    <input id="f-cmd" type="text" value="nothingtodo" />
+                    <br>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="#res" onclick="gen()">生成</a>
+            </div>
+        </div>
+        <a name='res'></a>
+        <div class="card">
+            <div class="card-header">
+                生成结果
+            </div>
+            <div class="card-body" id="res">
+                <input style="display:none" id="value" value='老铁你还没点生成，没东西可以复制哦！' /> 暂无结果
+            </div>
+            <br>
+            <div class="card-footer">
+                <a id="copy" href="#res" onclick="copy()" data-clipboard-target="#value">复制</a>
+            </div>
+        </div>
+    </div>
+</body>
+<footer>
+    <span style="width:100%;text-align:center;display:block;color:rgba(0, 0, 0, 0.31);">Copyright &copy; CKylin 2017<br><a href="https://github.com/Cansll/PointCard">PointCard 2 Project</a></span>
+</footer>
+<script src="http://cdn.bootcss.com/clipboard.js/1.7.1/clipboard.min.js"></script>
+<script src="assets/kyMD.js"></script>
+<script>
+    new Clipboard('#copy');
+
+    function copy() {
+        alert('已经复制！');
+    }
+
+    function getValue(id) {
+        return document.getElementById('f-' + id).value;
+    }
+
+    function setText(id, text) {
+        return document.getElementById(id).innerHTML = text;
+    }
+
+    function for1day() {
+        document.getElementById('f-expire').value = 24;
+    }
+
+    function for7day() {
+        document.getElementById('f-expire').value = 24 * 7;
+    }
+
+    function for1m() {
+        document.getElementById('f-expire').value = 24 * 31;
+    }
+
+    function for1y() {
+        document.getElementById('f-expire').value = 24 * 365;
+    }
+
+    function gen() {
+        var count = getValue('count');
+        var times = getValue('times');
+        var money = getValue('money');
+        var point = getValue('point');
+        var viple = getValue('vip-level');
+        var vipda = getValue('vip-days');
+        var prefx = getValue('prefix');
+        var comma = getValue('cmd');
+        var expire = getValue('expire');
+        var result = '/pcgen';
+        var modified = false;
+        if (count != 5) {
+            result += ' count=' + count;
+        }
+        if (times != 1) {
+            result += ' remain=' + times;
+        }
+        if (money != 0) {
+            modified = true;
+            result += ' m=' + money;
+        }
+        if (point != 0) {
+            modified = true;
+            result += ' point=' + point;
+        }
+        if (viple != 0) {
+            modified = true;
+            if (vipda > 0) {
+                result += ' level=' + viple + ' day=' + vipda;
+            } else {
+                alert('VIP必须同时填写等级和天数！');
+                return false;
+            }
+        } else if (vipda != 0) {
+            alert('VIP必须同时填写等级和天数！');
+            return false;
+        }
+        if (prefx != '.') {
+            modified = true;
+            result += ' prefix=' + prefx;
+        }
+        if (comma != 'nothingtodo') {
+            modified = true;
+            result += ' cmd=' + comma;
+        }
+        if (expire != 8760) {
+            modified = true;
+            result += ' expire=' + expire;
+        }
+        if (modified) {
+            setText('res',
+                '<input id="value" onclick="this.select()" readonly=readonly value="' + result + '"/>'
+            );
+            return true;
+        } else {
+            alert('请填写至少修改一个可执行参数');
+            return false;
+        }
+    }
+    document.title = window.orgtitle;
+</script>
+
+</html>
